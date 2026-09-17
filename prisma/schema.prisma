@@ -21,6 +21,7 @@ model Product {
   slug       String   @unique
   category   Category @relation(fields: [categoryId], references: [id])
   categoryId String
+  inventory  Int @default(0)
 }
 
 model Category {

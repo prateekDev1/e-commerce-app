@@ -85,7 +85,7 @@ export default async function ProductPage({
 
             <Separator className="my-4" />
 
-            {/* <div className="space-y-2">
+            <div className="space-y-2">
               <h2 className="font-medium">Availibility</h2>
 
               <div className="flex items-center gap-2">
@@ -109,7 +109,7 @@ export default async function ProductPage({
 
             <Separator className="my-4" />
 
-            <AddToCartButton product={product} /> */}
+            {/* <AddToCartButton product={product} /> */}
           </div>
         </CardContent>
       </Card>
