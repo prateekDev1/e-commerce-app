@@ -8,10 +8,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import Link from "next/link";
 
 export function ProductCard({ product }: { product: Product }) {
   return (
-    <Card className="pt-0 overflow-hidden">
+    <Link href={`/product/${product.slug}`} className="w-full">
+      <Card className="pt-0 overflow-hidden">
       <div className="relative aspect-video">
         {product.image ? (
           <Image
@@ -34,5 +36,7 @@ export function ProductCard({ product }: { product: Product }) {
       </CardHeader>
       <CardFooter>{formatPrice(product.price)}</CardFooter>
     </Card>
+    </Link>
+
   );
 }

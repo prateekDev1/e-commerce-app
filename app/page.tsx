@@ -10,6 +10,7 @@ import { ProductCard } from "./ProductCard";
 import { prisma } from "@/lib/prisma";
 import { Suspense } from "react";
 import ProductsSkeleton from "./ProductsSkeleton";
+import { sleep } from "@/lib/actions";
 
 type SearchParams = {
   [key: string]: string | string[] | undefined;
@@ -27,7 +28,8 @@ async function Products({ page }: { page: number }) {
     },
   })
 
-  await new Promise((resolve) => setTimeout(resolve, 3000)); // Simulate a delay of 1 second
+  await sleep(1000); // Simulate a delay for demonstration purposes
+  
   return (
     <>
       <p>Showing {products.length} products</p>
@@ -43,6 +45,7 @@ async function Products({ page }: { page: number }) {
 export default async function HomePage(props: { searchParams: SearchParams }) {
   const searchParams = await props.searchParams;
   const page = Number(searchParams.page) || 1;
+
   const total = await prisma.product.count();
   const totalPages = Math.ceil(total / pageSize);
 
