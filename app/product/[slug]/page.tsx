@@ -6,6 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { sleep } from "@/lib/actions";
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { ShoppingCart } from "lucide-react";
 
 // helps with generating metadata for the product page based on the product's slug : type of dynamic metadata generation
 export async function generateMetadata({
@@ -108,6 +110,13 @@ export default async function ProductPage({
             </div>
 
             <Separator className="my-4" />
+            
+            <div> 
+              <Button disabled={product.inventory === 0} className="w-full">
+                <ShoppingCart className="mr-1 h-4 w-4" />
+                {product.inventory === 0 ? "Out of stock" : "Add to cart"}
+              </Button>
+            </div>
 
             {/* <AddToCartButton product={product} /> */}
           </div>
