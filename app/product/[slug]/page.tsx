@@ -8,6 +8,7 @@ import { sleep } from "@/lib/actions";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart } from "lucide-react";
+import { Breadcrumbs } from "@/components/breadcrumb";
 
 // helps with generating metadata for the product page based on the product's slug : type of dynamic metadata generation
 export async function generateMetadata({
@@ -48,10 +49,20 @@ export default async function ProductPage({
   if (!product) {
     notFound();
   }
-  await sleep(1000)
+
+  const breadcrumbs = [
+    { label: "Products", href: "/" },
+    {
+      label: product.category?.name,
+      href: `/search/${product.category?.slug}`,
+    },
+    { label: product.name, href: `/product/${product.slug}`, active: true },
+  ];
+
+  await sleep(1000);
   return (
     <main className="container mx-auto py-4">
-      {/* <Breadcrumbs items={breadcrumbs} /> */}
+      <Breadcrumbs items={breadcrumbs} />
 
       <Card>
         <CardContent className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -110,8 +121,8 @@ export default async function ProductPage({
             </div>
 
             <Separator className="my-4" />
-            
-            <div> 
+
+            <div>
               <Button disabled={product.inventory === 0} className="w-full">
                 <ShoppingCart className="mr-1 h-4 w-4" />
                 {product.inventory === 0 ? "Out of stock" : "Add to cart"}

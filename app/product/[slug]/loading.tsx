@@ -1,4 +1,4 @@
-// import { BreadcrumbsSkeleton } from "@/components/breadcrumbs-skeleton";
+import { BreadcrumbsSkeleton } from "@/components/breadcrumb-skeleton";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -6,7 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default async function Loading() {
   return (
     <main className="container mx-auto py-4">
-      {/* <BreadcrumbsSkeleton /> */}
+      <BreadcrumbsSkeleton />
 
       <Card>
         <CardContent className="p-6 space-y-4">
