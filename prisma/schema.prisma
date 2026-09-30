@@ -13,20 +13,44 @@ datasource db {
 }
 
 model Product {
-  id         String   @id @default(cuid())
+  id          String      @id @default(cuid())
   name        String
   description String?
   price       Float
-  image      String?
-  slug       String   @unique
-  category   Category @relation(fields: [categoryId], references: [id])
-  categoryId String
-  inventory  Int @default(0)
+  image       String?
+  slug        String      @unique
+  category    Category    @relation(fields: [categoryId], references: [id])
+  categoryId  String
+  inventory   Int         @default(0)
+  cartItems   CartItem[]
+  // orderItems  OrderItem[]
 }
 
 model Category {
-  id          String @id @default(cuid())
-  name        String
-  slug        String @unique
-  products    Product[]
+  id       String    @id @default(cuid())
+  name     String
+  slug     String    @unique
+  products Product[]
+}
+
+model Cart {
+  id        String     @id @default(cuid())
+  items     CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  cart      Cart     @relation(fields: [cartId], references: [id])
+  cartId    String
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([cartId, productId])
+  @@index([cartId])
+  @@index([productId])
 }
