@@ -14,7 +14,7 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   },
 });
 
-export type OrderWithItemsAnsProduct = Prisma.OrderGetPayload<{
+export type OrderWithItemsAndProduct = Prisma.OrderGetPayload<{
   include: {
     items: {
       include: {
@@ -24,7 +24,7 @@ export type OrderWithItemsAnsProduct = Prisma.OrderGetPayload<{
   };
 }>;
 
-export async function createCheckoutSession(order: OrderWithItemsAnsProduct) {
+export async function createCheckoutSession(order: OrderWithItemsAndProduct) {
   if (!order.items || order.items.length === 0) {
     throw new Error("Order has no items");
   }
@@ -45,8 +45,8 @@ export async function createCheckoutSession(order: OrderWithItemsAnsProduct) {
       };
     });
 
-  const successUrl = `${process.env.NEXT_PUBLIC_URL}/order/success?session_id={CHECKOUT_SESSION_ID}`;
-  const cancelUrl = `${process.env.NEXT_PUBLIC_URL}/cart?cancel=true`;
+  const successUrl = `${process.env.NEXT_PUBLIC_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`;
+  const cancelUrl = `${process.env.NEXT_PUBLIC_URL}/checkout/cancel?session_id={CHECKOUT_SESSION_ID}`;
 
   try {
     // initialize a checkout session

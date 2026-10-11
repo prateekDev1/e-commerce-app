@@ -1,10 +1,17 @@
 import "dotenv/config";
-import { Product } from "@/app/generated/prisma/client";
+import { Product, User } from "@/app/generated/prisma/client";
 import { prisma } from "../lib/prisma";
+import { hashPassword } from "../lib/auth";
 
 async function main() {
-    await prisma.product.deleteMany();
-    await prisma.category.deleteMany();
+    // Clear dependent rows before products; roll back all cleanup if a delete fails.
+    await prisma.$transaction([
+        prisma.cartItem.deleteMany(),
+        prisma.orderItem.deleteMany(),
+        prisma.product.deleteMany(),
+        prisma.category.deleteMany(),
+        prisma.user.deleteMany(),
+    ]);
     const electronics = await prisma.category.create({
         data: {
             name: 'Electronics',
@@ -83,6 +90,40 @@ async function main() {
       data: product,
     });
   }
+
+  const users: User[] = [
+    {
+      id: "1",
+      email: "admin@example.com",
+      password: "password123",
+      name: "Admin User",
+      role: "Admin",
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      id: "2",
+      email: "user@example.com",
+      password: "password123",
+      name: "Regular User",
+      role: "User",
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }
+  ];
+
+  for(const user of users) {
+    const hashedPassword = await hashPassword(user.password);
+    await prisma.user.create({
+      data: {
+        ...user,
+        password: hashedPassword
+      }
+    });
+  }
+  
+  console.log("Users created");
+
 }
 
 main()

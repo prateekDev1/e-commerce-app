@@ -3,9 +3,14 @@
 import { cookies } from "next/headers";
 import { getCart } from "./actions";
 import { prisma } from "./prisma";
-import { createCheckoutSession } from "./stripe";
+import { createCheckoutSession, OrderWithItemsAndProduct } from "./stripe";
 
-export async function processCheckout() {
+export type ProcessCheckoutResponse = {
+  sessionUrl: string;
+  order: OrderWithItemsAndProduct;
+}
+
+export async function processCheckout(): Promise<ProcessCheckoutResponse> {
   const cart = await getCart();
   if (!cart || cart.items.length === 0) {
     throw new Error("Cart not found or empty");
@@ -66,12 +71,15 @@ export async function processCheckout() {
       where: { id: fullOrder.id },
       data: {
         stripeSessionId: sessionId,
-        status: "pending",
+        status: "pending_payment",
       },
     });
 
     (await cookies()).delete("cartId");
-    return order;
+    return {
+      sessionUrl,
+      order: fullOrder
+    }
   } catch (error) {
     // 1. Optional: change the order status to failed
     if (orderId && error instanceof Error && error.message.includes("Stripe")) {
