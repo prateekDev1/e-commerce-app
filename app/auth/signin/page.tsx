@@ -14,41 +14,52 @@ import { Button } from "@/components/ui/button";
 import { LoginSchema, LoginSchemaType } from "@/lib/schemas";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Field,
-  FieldError,
-  FieldLabel,
-} from "@/components/ui/field";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
-
+import { useSession } from "next-auth/react";
 
 export default function SignInPage() {
+  const [error, setError] = useState<string | null>(null);
+  const {update: updateSession} = useSession();
 
-    const [error, setError] = useState<string | null>(null);
+  const form = useForm<LoginSchemaType>({
+    resolver: zodResolver(LoginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
 
-    const form = useForm<LoginSchemaType>({
-        resolver: zodResolver(LoginSchema),
-        defaultValues: {
-            email: "",
-            password: "",
-        },
-    });
+  const router = useRouter();
 
-    const router = useRouter();
+  const onSubmit = async (data: LoginSchemaType) => {
+    setError(null);
+    try {
+      const result = await signIn("credentials", {
+        email: data.email,
+        password: data.password,
+        redirect: false,
+      });
+      if(result?.error) {
+        if(result.error === "CredentialsSignin") {
+          setError("Invalid email or password");
+        } else {
+          setError("An error occured while signing in");
+        }
+      }
+      else {
+        await updateSession();
+        router.push("/");
+      }
+    } catch (error) {
+      console.error("Sign in error:", error);
+      setError("An error occured while signing in");
+    }
+  };
 
-    const onSubmit = async(data: LoginSchemaType) => {
-        console.log(data);
-        const result = await signIn("credentials",{
-          email: data.email,
-          password: data.password,
-          redirect: false,
-        });
-        console.log(result);
-    };
-
-    return (
+  return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader>
@@ -65,6 +76,9 @@ export default function SignInPage() {
         </CardHeader>
 
         <CardContent>
+          {error && (
+            <p className="mb-4 text-sm text-destructive">{error}</p>
+          )}
           <form
             onSubmit={form.handleSubmit(onSubmit)}
             className="space-y-4"
@@ -88,10 +102,7 @@ export default function SignInPage() {
                     }
                   />
                   {fieldState.invalid && (
-                    <FieldError
-                      id="email-error"
-                      errors={[fieldState.error]}
-                    />
+                    <FieldError id="email-error" errors={[fieldState.error]} />
                   )}
                 </Field>
               )}

@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { getCart } from "./actions";
 import { prisma } from "./prisma";
 import { createCheckoutSession, OrderWithItemsAndProduct } from "./stripe";
+import { auth } from "./auth";
 
 export type ProcessCheckoutResponse = {
   sessionUrl: string;
@@ -12,6 +13,8 @@ export type ProcessCheckoutResponse = {
 
 export async function processCheckout(): Promise<ProcessCheckoutResponse> {
   const cart = await getCart();
+  const session = await auth();
+  const userId = session?.user?.id;
   if (!cart || cart.items.length === 0) {
     throw new Error("Cart not found or empty");
   }
@@ -25,6 +28,7 @@ export async function processCheckout(): Promise<ProcessCheckoutResponse> {
       const newOrder = await tx.order.create({
         data: {
           total,
+          userId: userId || null
         },
       });
       const orderItems = cart.items.map((item) => ({

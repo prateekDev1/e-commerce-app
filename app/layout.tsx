@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ModeToggle } from "@/components/mode-toggle";
 import { Navbar } from "@/components/navbar";
+import { SessionProvider } from "next-auth/react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,7 +30,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body>
-        <ThemeProvider
+        <SessionProvider>
+          <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
@@ -47,6 +49,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             </footer>
           </>
         </ThemeProvider>
+        </SessionProvider>
       </body>
     </html>
   );

@@ -3,7 +3,7 @@ import { ModeToggle } from "./mode-toggle";
 import { MobileNav } from "./mobile-nav";
 // import { MobileNav } from "./mobile-nav";
 import { SearchInput } from "./search-input";
-// import AuthStatus from "./auth-status";
+import AuthStatus from "./auth-status";
 import { CartIndicator } from "./cart-indicator";
 import { Suspense } from "react";
 import { CartIndicatorSkeleton } from "./cart-indicator-skeleton";
@@ -43,7 +43,7 @@ export function Navbar() {
         </div>
 
         <div className="flex items-center gap-0">
-          {/* <AuthStatus /> */}
+          <AuthStatus />
           <Suspense fallback={<CartIndicatorSkeleton />}>
             <CartIndicator />
           </Suspense>
